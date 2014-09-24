@@ -8,6 +8,6 @@ Use Fetch, the all-in-one web scraper created in Python. Fetch allows users to r
 ![Image here.](/src-progress/fetch1.1.png)
 
 ###Download:
-[Windows Download Link](https://github.com/raymonstah/Fetch/blob/master/Fetch.zip?raw=true)
+[Windows Download Link](https://github.com/raymonstah/Fetch/blob/master/fetch_windows.zip?raw=true)
 
 [Mac Download Link](https://github.com/raymonstah/Fetch/blob/master/fetch_mac.zip?raw=true)

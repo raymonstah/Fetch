@@ -1,4 +1,4 @@
-#Fetch
+Fetch
 =================
 
 [Windows Download Link](https://github.com/raymonstah/Fetch/blob/master/Fetch.zip?raw=true)

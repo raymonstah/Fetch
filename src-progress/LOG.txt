@@ -1,6 +1,12 @@
-Today is 9/20/14. I finished wrapping up the GUI for Fetch. So far, I'm happy with my program. It's a nifty tool that gets the top HD movies from ThePirateBay. This project was made possible using BeautifulSoup. I'll get more into that later.
+Today is 9/20/14. I finished wrapping up the GUI for Fetch. So far, I'm happy with my program.
+It's a nifty tool that gets the top HD movies from ThePirateBay.
+This project was made possible using BeautifulSoup. I'll get more into that later.
 
-But basically, I parsed the HTML code from ThePirateBay, and returned the things I needed into a listbox. There's options such as downloading subtitles along with the torrent, which makes it easier for the user since it's one less step they have to do. The subtitles is optional, so I made it into a checkbox. It is checked by default. User can also view IMDb link by clicking on the movie image which shows the movie cover.
+But basically, I parsed the HTML code from ThePirateBay, and returned the things I needed into a listbox.
+There's options such as downloading subtitles along with the torrent, which makes it easier for the user
+since it's one less step they have to do. The subtitles is optional, so I made it into a checkbox.
+It is checked by default. User can also view IMDb link by clicking on the movie image which shows
+the movie cover.
 
 
 OPTIMIZATIONS:
@@ -126,19 +132,23 @@ PROBLEM 3: UNNECESSARY BUTTON
 PROBLEM 4: PY2APP NOT FRIENDLY WITH PILLOW (PIL FORK)(9/22/14 update)
 
 	THEORY: I HATE EXTERNAL MODULES.
-	Remember when I said I was worried that external modules would become a problem
-	later on when I was deploying. Well, I was right. I spend about 5 hours figuring
-	out why my application wouldn’t deploy correct. I’ve used almost every Python
-	packaging system out there (py2app, cx_freeze, pyinstaller, and a bunch of other
-	random ones. I finally narrowed down the issue to Pillow. Looks like I’m going to
-	have to get rid of you, Pillow. 
-	
-	Tkinter doesn’t play nice with non GIF files, which is the reason I had to use Pillow
-	in the first place. Pillow allows me to open the JPEG files that I’ve been downloading from 	IMDb to display in Tkinter’s widgets. It was a quick fix to display images.
+    	Remember when I said I was worried that external modules would become a problem
+    	later on when I was deploying. Well, I was right. I spend about 5 hours figuring
+    	out why my application wouldn’t deploy correct. I’ve used almost every Python
+    	packaging system out there (py2app, cx_freeze, pyinstaller, and a bunch of other
+    	random ones. I finally narrowed down the issue to Pillow. Looks like I’m going to
+    	have to get rid of you, Pillow. 
+    	
+    	Tkinter doesn’t play nice with non GIF files, which is the reason I had to use Pillow
+    	in the first place. Pillow allows me to open the JPEG files that I’ve been downloading from 
+        IMDb to display in Tkinter’s widgets. It was a quick fix to display images.
 	
 	CONCLUSION:
-	Since I can’t get my application to deploy with Pillow, I’m removing it. Instead I’ll
-	be making a subprocess call to built-into-Mac command, ‘sips’. It converts image files for 	you. So instead of opening the image through Pillow, we can simply convert it to a GIF and 	directly display it with Tkinter. Got rid of Pillow, and everything works now. I’m able to 	deploy Fetch through py2applet. Beautiful. 
+    	Since I can’t get my application to deploy with Pillow, I’m removing it. Instead I’ll
+    	be making a subprocess call to built-into-Mac command, ‘sips’. It converts image files for
+        you. So instead of opening the image through Pillow, we can simply convert it to a GIF and
+        directly display it with Tkinter. Got rid of Pillow for Mac. Pillow is only in the Windows
+        version.
 
 
 TESTS:
@@ -149,21 +159,10 @@ TESTS:
 # Get Sub   :  17.542452030000277
 # Get Pic   :  12.091509388999839
 
-From here, we can conclude that getting the IMDb URL takes longest because it has to search its database for the link. Getting the subtitles also takes a little long because we’re requesting two URLs, one to search for the link, and one to download from the link it returns.
+From here, we can conclude that getting the IMDb URL takes longest because it has to search its database
+for the link. Getting the subtitles also takes a little long because we’re requesting two URLs, one to
+search for the link, and one to download from the link it returns.
 
-
-TODO:
-
-    1. Add classes (maybe)
-    2. Implement threads
-    3. Save URL IMDb mapping page.
-    4. I can make the program super fast, but it will have a slow startup time.
-        Trade-off? Preload everything before program starts, or fetch as user
-        selects different movie?
-    5. Often, the top torrent pages contain the same movie in different
-        resolutions, different person who uploaded, etc. But it's still the same
-        movie, which means the IMDb link is the exact same. It'll be cool to map all
-        of those duplicate movies to one IMDb link. How to determine if same though?
 
 
 OTHER:
@@ -174,4 +173,5 @@ OTHER:
 
 
 UPDATES:
-	9/23/2014 - Added classes, formatting PEP8 errors.
+	9/23/2014 - Added classes, threads, formatted PEP8 errors
+    9/24/2014 - Succesfully created .exe and .app for Windows and Mac, respectively.

@@ -1,0 +1,177 @@
+Today is 9/20/14. I finished wrapping up the GUI for Fetch. So far, I'm happy with my program. It's a nifty tool that gets the top HD movies from ThePirateBay. This project was made possible using BeautifulSoup. I'll get more into that later.
+
+But basically, I parsed the HTML code from ThePirateBay, and returned the things I needed into a listbox. There's options such as downloading subtitles along with the torrent, which makes it easier for the user since it's one less step they have to do. The subtitles is optional, so I made it into a checkbox. It is checked by default. User can also view IMDb link by clicking on the movie image which shows the movie cover.
+
+
+OPTIMIZATIONS:
+
+PROBLEM 0: CLASSES OR NO CLASSES?
+    
+    THEORY 1: I'm not a big fan of using classes when programming. It was
+        definitely possible with this program. Ex: Have a Movie class, with functions
+        such as movie.getSubtitles(), movie.getIMDbLink(), movie.download(), and so on.
+
+    CONCLUSION: No Classes, unless you count the one used when creating the
+        GUI form. Reason being, it wasn't too necessary, I find code easier to read
+        when the style is structured rather than object-oriented.
+
+PROBLEM 1: APP IS TOO SLOW.
+
+    THEORY 1: GUI IS THE PROBLEM.
+        
+    CONCLUSION: I ran the same functions without the GUI (just calling the functions),
+        and concluded that the slow down was not within the GUI. It must be
+        the algorithms and functions.
+
+ 
+    THEORY 2: BEAUTIFULSOUP4 TOO SLOW.
+        Searching through an entire HTML document to find links must be
+        exhausting, right?
+    
+    CONCLUSION:
+        Nope. BeautifulSoup is fast at parsing through HTML files. Using
+        timeit, I ran two functions. One where there is no HTML parsing, and one where
+        there is. No significant difference.
+
+    THEORY 3: URL REQUESTS WERE TOO SLOW.
+        Was it the Python modules that I was using? Should I have used threads?
+
+        I'm not a big fan of using a bunch of external modules. For one, I find it not
+        so portable to use. Transferring your code to another environment would mean
+        that you would have to download the modules again. Also, I'm worried about
+        the external modules when exporting into app/exe. The external modules 
+        I couldn't have gone without are probably Pillow and BeautifulSoup.
+        For requesting URLs, I'm using urllib, which comes default with Python 3.
+
+        Each URL request takes about 2 seconds. Although that may not sound alot,
+        we as humans are spoiled by instant times. Some may blame Python for being a
+        slow language, but I don't at all. I believe that if code is slow, it's the
+        developers fault. To make matters worse, the application attempts to read a
+        link from IMDb every time the user scrolls through the Listbox to select a
+        different movie.
+
+    CONCLUSION: My solution to this problem was to avoid it. I've tested other modules besides
+        urllib, such as Requests. Requests is really simple to use, but after timing
+        both of them, I've concluded that they are about the same speed. Using the
+        external module over the included one provided me no performance gains.
+        Instead, I began to search for something else to blame...
+
+    THEORY 3: I'M CALLING THE FUNCTIONS THAT REQUESTS URLS TOO OFTEN.
+        Within the GUI application, all of the links from ThePirateBay are
+        retrieved once, and stored into the listbox for the user to scroll through.
+        Cool, this could use some improving (BeautifulSoup algorithm?). Takes
+        about 5 seconds to load GUI with 100 items.
+
+        Whats actually slowing down the application though, is when the user
+        switches the selected item from the Listbox. Every time the user
+        switches, URL requests are being made to IMDb to fetch the direct IMDb link
+        (it has to search its database first), and once it finds that link, it has to
+        search THAT link for the movie image. I found two separate GUI items
+        (IMDb link button, IMDb image label) that calls the function that retrieves
+        the IMDb link. I eventually remove the IMDb link button, and turn the
+        image into a clickable label. More on that later.
+
+    CONCLUSION: Store the URL into a variable. Reference that variable from
+        both the link button, and the movie image label. One less call, twice as fast.
+        But still slow. From about 4 second delay to 2 seconds when switching
+        the selected movie.
+
+    THEORY 4: URL REQUESTS WERE TOO SLOW (AGAIN)
+        Okay, there has to be a more efficient way of retrieving data every
+        time the user switches between selected movie. I may have stated this before,
+        but EVERY time the user switches, 2 separate requests are made. One, to search
+        IMDb's database for the movie's link. Two, to retrieve image from that link.
+        
+    
+    CONCLUSION: TITLE to URL MAP, STORE COPY OF IMAGE IN DISK, CHECK EXIST.
+        I was so proud of myself for thinking of this. Okay first, download
+        the image to disk after all the URL requests have been made. If the user comes
+        back to this selected item, check if we've saved that image already. If we
+        have, great; load it. That's one less URL request. Still not fast enough. It
+        must be the database searching that takes a while. Second, every time the user
+        changes selected item, store the URL into a map so we don't have to find the
+        URL again. If the user switches back to a movie already visited, it'll be in
+        the map and we'll have the link. Bam. INSTANT, no delay switching between
+        movies that have already been selected. Thank you Python dicts. O(1) look-up
+        times.
+
+        
+PROBLEM 2: CODE REPETITION
+
+    THEORY: TOO MANY REPEATED CALLS TO PARSE HTML.
+
+    CONCLUSION: One function to do it all. Oh yeah. It doesn't have any
+        performance gains, but it sure makes my code cleaner and easier to read.
+
+
+PROBLEM 3: UNNECESSARY BUTTON
+    
+    THEORY: LESS IS MORE.
+
+    CONCLUSION: Instead of having a button that links the user to the IMDb
+        page, I can instead have the image label do that in addition to displaying
+        the movie image.. One less button to load, and the application looks cleaner.
+
+    THEORY: HOW AM I SUPPOSED TO KNOW THAT THIS IMAGE IS CLICKABLE?
+        How is the user suppose to know that the image can be clicked? I'm
+        sure there's some way to make it pretty obvious without having any
+        addition labels or buttons that scream "Click here, I'm a IMDb link".
+    
+    CONCLUSION: GIVE THEM WHAT THEY'RE USED TO.
+        Link interact with you. They're blue, they turn purple when clicked.
+        They're underlined when hovered above. I added a thin blue outline around
+        the movie image whenever the user hovers over the image. Subtle, but I think
+        extremely needed.
+
+PROBLEM 4: PY2APP NOT FRIENDLY WITH PILLOW (PIL FORK)(9/22/14 update)
+
+	THEORY: I HATE EXTERNAL MODULES.
+	Remember when I said I was worried that external modules would become a problem
+	later on when I was deploying. Well, I was right. I spend about 5 hours figuring
+	out why my application wouldn’t deploy correct. I’ve used almost every Python
+	packaging system out there (py2app, cx_freeze, pyinstaller, and a bunch of other
+	random ones. I finally narrowed down the issue to Pillow. Looks like I’m going to
+	have to get rid of you, Pillow. 
+	
+	Tkinter doesn’t play nice with non GIF files, which is the reason I had to use Pillow
+	in the first place. Pillow allows me to open the JPEG files that I’ve been downloading from 	IMDb to display in Tkinter’s widgets. It was a quick fix to display images.
+	
+	CONCLUSION:
+	Since I can’t get my application to deploy with Pillow, I’m removing it. Instead I’ll
+	be making a subprocess call to built-into-Mac command, ‘sips’. It converts image files for 	you. So instead of opening the image through Pillow, we can simply convert it to a GIF and 	directly display it with Tkinter. Got rid of Pillow, and everything works now. I’m able to 	deploy Fetch through py2applet. Beautiful. 
+
+
+TESTS:
+
+# RESULTS from timeit, running each function 10x.
+# Get Movies:  16.994187127005716
+# Get URL   :  25.151751717996376
+# Get Sub   :  17.542452030000277
+# Get Pic   :  12.091509388999839
+
+From here, we can conclude that getting the IMDb URL takes longest because it has to search its database for the link. Getting the subtitles also takes a little long because we’re requesting two URLs, one to search for the link, and one to download from the link it returns.
+
+
+TODO:
+
+    1. Add classes (maybe)
+    2. Implement threads
+    3. Save URL IMDb mapping page.
+    4. I can make the program super fast, but it will have a slow startup time.
+        Trade-off? Preload everything before program starts, or fetch as user
+        selects different movie?
+    5. Often, the top torrent pages contain the same movie in different
+        resolutions, different person who uploaded, etc. But it's still the same
+        movie, which means the IMDb link is the exact same. It'll be cool to map all
+        of those duplicate movies to one IMDb link. How to determine if same though?
+
+
+OTHER:
+    Although I'm proud of what I've done so far (9/21/14)..
+    If I look back at this from a year from now, I'll probably be disgusted at my code,
+    and possibly have no idea what I wrote. Hopefully this documentation will refresh my
+    memory of the thoughts, ideas, and whatever else was going through my mind at that time.
+
+
+UPDATES:
+	9/23/2014 - Added classes, formatting PEP8 errors.

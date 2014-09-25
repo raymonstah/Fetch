@@ -1,6 +1,8 @@
 # Raymond Ho
 # Sept 17, 2014
 
+# Disable: import PIL in class Movie.download_imdb_icon(), if deploying with py2app.
+
 """ A GUI application created in Python that will get top HD movies from ThePirateBay,
 provide links to the movie's IMDb and torrent page, allow instant subtitle download
 along with the movie download, and display the movie icon. Created in Python.

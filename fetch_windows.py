@@ -7,10 +7,8 @@ along with the movie download, and display the movie icon. Created in Python.
 """
 
 from urllib import request, parse  # Used to generate URLs and open links
-import subprocess  # Open sub processes..
-import timeit
 from bs4 import BeautifulSoup  # Used to parse HTML
-import threading
+import subprocess  # Open sub processes..
 import os
 import os.path
 from tkinter import *
@@ -27,11 +25,11 @@ elif os.name == 'posix':
 
 def links_in_soup(soup, begins='', contains='', count='list'):
     """
-            Finds links in a BeautifulSoup object.
-            If the link starts with 'begins', or 'contains' is IN the link,
-            then the link will be appended to a list.
-            If 'count' is 'single', break loop and return first one found.
-            Else, exhaust loop, and return a list of all matches.
+        Finds links in a BeautifulSoup object.
+        If the link starts with 'begins', or 'contains' is IN the link,
+        then the link will be appended to a list.
+        If 'count' is 'single', break loop and return first one found.
+        Else, exhaust loop, and return a list of all matches.
     """
 
     results = []
@@ -91,6 +89,11 @@ class Movie():
     def get_imdb_url(self):
         """ Returns the IMDb link given a title, updates imdb url """
 
+        # In case we have it already.
+        if self.imdb_url:
+            print('IMDb url found. Returning.')
+            return self.imdb_url
+
         # Strip periods, and replace with spaces.
         title = ''.join([x.replace('.', ' ') for x in list(self.title)])
 
@@ -121,14 +124,7 @@ class Movie():
         if not os.path.isfile(dir_title_gif):
             print('File was not found, receiving..')
 
-            # Don't break until we successfully retrieve icon.
-            while True:
-                try:
-                    # Icon may be type None because thread hasn't reached there yet.
-                    photo_link = self.get_imdb_icon()
-                except AttributeError:
-                    continue
-                break
+            photo_link = self.get_imdb_icon()
 
             # Save as JPG, convert to GIF after.
             request.urlretrieve(photo_link, dir_title_jpg)
@@ -142,8 +138,6 @@ class Movie():
                 im = PIL.Image.open(dir_title_jpg).save(dir_title_gif)
                 os.remove(dir_title_jpg)
 
-
-
         self.dir_title_gif = dir_title_gif
 
     def __init__(self, title, torrent_link, download):
@@ -151,32 +145,26 @@ class Movie():
         self.torrent_link = torrent_link
         self.download = download
         self.imdb_url = None  # Defined by get_imdb_url()
-        self.dir_title_gif = None # Defined by download_imdb_icon()
-
-        # Simultaneous threads to fetch URL.
-        threading.Thread(target=self.get_imdb_url).start()
-
-
+        self.dir_title_gif = None  # Defined by download_imdb_icon()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~ END MOVIE CLASS ~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
+
 
 def get_links(link):
     """ Returns a list of (title, link, download_link) of a provided link """
 
-    list_soup = BeautifulSoup(request.urlopen(link))
+    list_soup = BeautifulSoup(request.urlopen(link).read())
 
     # All download links are in a list.
-    download_links = links_in_soup(list_soup, 'magnet', '')
 
     results = []
 
     # Get all torrent links from TPB specific URL
-    counter = 0
-    for link in list_soup.findAll('a', {'class': 'detLink'}):
+    # Iterate two lists at once (one to find movies, other to find downloads)
+    for link, torrent in zip(list_soup.findAll('a', {'class': 'detLink'}),
+                             links_in_soup(list_soup, 'magnet', '')):
         link_to = BASEURL + link.get('href')
-        title, download = link.string, download_links[counter]
-        results.append(Movie(title, link_to, download))
-        counter += 1
+        results.append(Movie(link.string, link_to, torrent))
 
     return results
 
@@ -246,8 +234,8 @@ class Application(Frame):
 
         def update_image():
 
+            movie.get_imdb_url()
             movie.download_imdb_icon()
-
             # Load the image for Tkinter use.
             photo = PhotoImage(file=movie.dir_title_gif)
             # Editing the moviePicture Label.
@@ -297,7 +285,6 @@ if not os.path.exists(PICDIR):
 
 BASEURL = 'http://thepiratebay.se/'
 TOPHDMOVIES = BASEURL + 'top/207'  # The Top 100 Movies on TPB
-
 
 root = Tk()
 root.wm_title('Fetch, by Raymond Ho')

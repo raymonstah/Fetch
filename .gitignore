@@ -1,2 +1,3 @@
 /pics/*
-*./app
+*.app
+*.zip

@@ -134,6 +134,7 @@ class Movie():
                 subprocess.call(['sips', '-s', 'format', 'gif', dir_title_jpg, '--out', dir_title_gif])
                 os.remove(dir_title_jpg)
             elif WINDOWS:
+                # Comment lines out if using py2app, PIL not supported.
                 import PIL.Image
                 im = PIL.Image.open(dir_title_jpg).save(dir_title_gif)
                 os.remove(dir_title_jpg)

@@ -1,6 +1,6 @@
 Today is 9/20/14. I finished wrapping up the GUI for Fetch. So far, I'm happy with my program.
 It's a nifty tool that gets the top HD movies from ThePirateBay.
-This project was made possible using BeautifulSoup. I'll get more into that later.
+This project was made possible using BeautifulSoup.
 
 But basically, I parsed the HTML code from ThePirateBay, and returned the things I needed into a listbox.
 There's options such as downloading subtitles along with the torrent, which makes it easier for the user
@@ -10,16 +10,6 @@ the movie cover.
 
 
 OPTIMIZATIONS:
-
-PROBLEM 0: CLASSES OR NO CLASSES?
-    
-    THEORY 1: I'm not a big fan of using classes when programming. It was
-        definitely possible with this program. Ex: Have a Movie class, with functions
-        such as movie.getSubtitles(), movie.getIMDbLink(), movie.download(), and so on.
-
-    CONCLUSION: No Classes, unless you count the one used when creating the
-        GUI form. Reason being, it wasn't too necessary, I find code easier to read
-        when the style is structured rather than object-oriented.
 
 PROBLEM 1: APP IS TOO SLOW.
 
@@ -89,17 +79,15 @@ PROBLEM 1: APP IS TOO SLOW.
         IMDb's database for the movie's link. Two, to retrieve image from that link.
         
     
-    CONCLUSION: TITLE to URL MAP, STORE COPY OF IMAGE IN DISK, CHECK EXIST.
-        I was so proud of myself for thinking of this. Okay first, download
-        the image to disk after all the URL requests have been made. If the user comes
-        back to this selected item, check if we've saved that image already. If we
-        have, great; load it. That's one less URL request. Still not fast enough. It
+    CONCLUSION: STORE COPY OF IMAGE IN DISK, CHECK EXIST. KEEP INSTANCE VARIABLE IN CLASS.
+        Okay first, download the image to disk after all the URL requests have been made.
+        If the user comes back to this selected item, check if we've saved that image already.
+        If we have it, great; load it. That's one less URL request. Still not fast enough. It
         must be the database searching that takes a while. Second, every time the user
-        changes selected item, store the URL into a map so we don't have to find the
+        changes selected item, store the URL into a variable so we don't have to find the
         URL again. If the user switches back to a movie already visited, it'll be in
-        the map and we'll have the link. Bam. INSTANT, no delay switching between
-        movies that have already been selected. Thank you Python dicts. O(1) look-up
-        times.
+        the class variable and we'll have the link. Bam. INSTANT, no delay switching between
+        movies that have already been fetched. 
 
         
 PROBLEM 2: CODE REPETITION
@@ -124,7 +112,7 @@ PROBLEM 3: UNNECESSARY BUTTON
         addition labels or buttons that scream "Click here, I'm a IMDb link".
     
     CONCLUSION: GIVE THEM WHAT THEY'RE USED TO.
-        Link interact with you. They're blue, they turn purple when clicked.
+        Links interact with you. They're blue, they turn purple when clicked.
         They're underlined when hovered above. I added a thin blue outline around
         the movie image whenever the user hovers over the image. Subtle, but I think
         extremely needed.
@@ -164,7 +152,6 @@ for the link. Getting the subtitles also takes a little long because we’re req
 search for the link, and one to download from the link it returns.
 
 
-
 OTHER:
     Although I'm proud of what I've done so far (9/21/14)..
     If I look back at this from a year from now, I'll probably be disgusted at my code,
@@ -175,3 +162,7 @@ OTHER:
 UPDATES:
 	9/23/2014 - Added classes, threads, formatted PEP8 errors
     9/24/2014 - Succesfully created .exe and .app for Windows and Mac, respectively.
+	9/24/2014 - Removed threads.. not exactly safe (lots of error handling) and didn’t
+                improve speed by too much. Will bring back once I learn more about threads 
+                in Python. Mac version only.
+

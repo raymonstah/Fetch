@@ -7,10 +7,9 @@ along with the movie download, and display the movie icon. Created in Python.
 """
 
 from urllib import request, parse  # Used to generate URLs and open links
-import subprocess  # Open sub processes..
-import timeit
-import time
 from bs4 import BeautifulSoup  # Used to parse HTML
+import subprocess  # Open sub processes..
+import time
 import os
 import os.path
 from tkinter import *
@@ -93,7 +92,7 @@ class Movie():
 
         # In case we have it already.
         if self.imdb_url:
-            print('I have the IMDb URL already num.')
+            print('IMDb url found. Returning.')
             return self.imdb_url
 
         # Strip periods, and replace with spaces.
@@ -140,42 +139,33 @@ class Movie():
                 #import PIL.Image
                 #im = PIL.Image.open(dir_title_jpg).save(dir_title_gif)
 
-
-
         self.dir_title_gif = dir_title_gif
 
     def __init__(self, title, torrent_link, download):
-        print(title)
         self.title = title
         self.torrent_link = torrent_link
         self.download = download
         self.imdb_url = None  # Defined by get_imdb_url()
         self.dir_title_gif = None # Defined by download_imdb_icon()
 
-
-
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~ END MOVIE CLASS ~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
 def get_links(link):
     """ Returns a list of (title, link, download_link) of a provided link """
 
-    list_soup = BeautifulSoup(request.urlopen(link))
+    list_soup = BeautifulSoup(request.urlopen(link).read())
 
     # All download links are in a list.
-    download_links = links_in_soup(list_soup, 'magnet', '')
 
     results = []
 
     # Get all torrent links from TPB specific URL
-    counter = 0
-    for link in list_soup.findAll('a', {'class': 'detLink'}):
+    # Iterate two lists at once (one to find movies, other to find downloads)
+    for link, torrent in zip(list_soup.findAll('a', {'class': 'detLink'}),
+                                links_in_soup(list_soup, 'magnet', '')):
         link_to = BASEURL + link.get('href')
-        title, download = link.string, download_links[counter]
-        results.append(Movie(title, link_to, download))
-        counter += 1
+        results.append(Movie(link.string, link_to, torrent))
 
-    print('Done.')
     return results
 
 
@@ -295,7 +285,6 @@ if not os.path.exists(PICDIR):
 
 BASEURL = 'http://thepiratebay.se/'
 TOPHDMOVIES = BASEURL + 'top/207'  # The Top 100 Movies on TPB
-
 
 root = Tk()
 root.wm_title('Fetch, by Raymond Ho')

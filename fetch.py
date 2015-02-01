@@ -9,6 +9,7 @@ along with the movie download, and display the movie icon. Created in Python.
 """
 
 from urllib import request, parse  # Used to generate URLs and open links
+import requests
 from bs4 import BeautifulSoup  # Used to parse HTML
 import subprocess  # Open sub processes..
 import os
@@ -46,9 +47,12 @@ def links_in_soup(soup, begins='', contains='', count='list'):
 
         except AttributeError:  # Some objects has no attribute 'startswith'
             continue
-
+    
+    if not results:
+        return None
     if count == 'single':
         return results[0]
+
     return results
 
 
@@ -85,7 +89,6 @@ class Movie():
 
         # Base URL + the download link
         result = subscene + links_in_soup(sub_download_soup, '/subtitle/download', '', 'single')
-
         downloader(result)
 
     def get_imdb_url(self):
@@ -98,19 +101,25 @@ class Movie():
 
         # Strip periods, and replace with spaces.
         title = ''.join([x.replace('.', ' ') for x in list(self.title)])
+        bad_strings = ['1080', '720']
+        for bad_string in bad_strings:
+            bad_index = title.find(bad_string)
+            if bad_index != -1: # -1 means bad string was not found.
+                title = title[:bad_index]
 
-        imdb = 'http://www.imdb.com/find?q=' + parse.quote_plus(title) + '&s=tt'
-        imdb_soup = BeautifulSoup(request.urlopen(imdb).read())
+        imdb = 'http://www.imdb.com/find?ref_=nv_sr_fn&q=' + parse.quote_plus(title) + '&s=tt'
+        imdb_soup = BeautifulSoup(requests.get(imdb).text)
 
         result = links_in_soup(imdb_soup, '/title', '', 'single')
-
+        if not result:
+            print (imdb)
         self.imdb_url = 'http://www.imdb.com' + result
         return self.imdb_url
 
     def get_imdb_icon(self):
         """ Returns a link to an icon of a specific movie from IMDb """
 
-        link_soup = BeautifulSoup(request.urlopen(self.imdb_url).read())
+        link_soup = BeautifulSoup(requests.get(self.imdb_url).text)
         link = link_soup.find(itemprop='image')
         return link['src']
 
@@ -137,10 +146,10 @@ class Movie():
                 os.remove(dir_title_jpg)
             elif WINDOWS:
                 # Comment lines out if using py2app, PIL not supported.
-                import PIL.Image
-                im = PIL.Image.open(dir_title_jpg).save(dir_title_gif)
-                os.remove(dir_title_jpg)
-
+                #import PIL.Image
+                #im = PIL.Image.open(dir_title_jpg).save(dir_title_gif)
+                #os.remove(dir_title_jpg)
+                return
         self.dir_title_gif = dir_title_gif
 
     def __init__(self, title, torrent_link, download):
@@ -156,7 +165,7 @@ class Movie():
 def get_links(link):
     """ Returns a list of (title, link, download_link) of a provided link """
 
-    list_soup = BeautifulSoup(request.urlopen(link).read())
+    list_soup = BeautifulSoup(requests.get(link).text)
 
     # All download links are in a list.
 

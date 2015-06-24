@@ -134,10 +134,17 @@ def get_torrent_links(base_url='http://thepiratebay.mn/', category='top/207'):
 
 
 def create_database():
-    conn = sqlite3.connect('example.db')
+    print("Creating database")
+    conn = sqlite3.connect('fetched_movies.db')
     c = conn.cursor()
-    c.execute('''CREATE TABLE stocks
-             (date text, trans text, symbol text, qty real, price real)''')
+    c.execute('''CREATE table if not exists Movies (
+    name text,
+    torrent_url text,
+    subtitle_link text,
+    subtitle_download text,
+    imdb_page text,
+    imdb_icon text
+    )''')
     conn.commit()
     conn.close()
 

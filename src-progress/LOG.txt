@@ -1,3 +1,13 @@
+UPDATE Jun 24, 2015:
+I plan on working on this app again.
+My goals are to:
+- Add a database to prevent slow web scraping everytime
+- Convert from GUI to web app.
+- Clean up code
+- Add unit tests
+
+
+
 Today is 9/20/14. I finished wrapping up the GUI for Fetch. So far, I'm happy with my program.
 It's a nifty tool that gets the top HD movies from ThePirateBay.
 This project was made possible using BeautifulSoup.

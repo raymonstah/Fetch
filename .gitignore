@@ -1,3 +1,5 @@
 /pics/*
 *.app
 *.zip
+*pyc
+__pycache__/

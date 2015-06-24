@@ -1,7 +1,9 @@
 Fetch
 =================
 
-###UPDATE: The app is back up, but retrieving IMDb thumbnails isn't working 100%.
+###UPDATE: Working on converting the GUI application to a Web application using Flask.
+
+####UPDATE: The app is back up, but retrieving IMDb thumbnails isn't working 100%.
 ###You must build from the source itself.
 
 ###What is Fetch?

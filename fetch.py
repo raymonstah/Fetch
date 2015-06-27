@@ -19,8 +19,7 @@ class Movie():
 
         subscene = 'http://subscene.com'
         subscene_list = subscene + '/subtitles/title?q=' + parse.quote_plus(self.title)
-
-        sub_soup = BeautifulSoup(request.urlopen(subscene_list).read())
+        sub_soup = BeautifulSoup(requests.get(subscene_list))
 
         sub_list = links_in_soup(sub_soup, '', language)
         # Append the full URL for every item in list

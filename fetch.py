@@ -6,8 +6,8 @@ provide links to the movie's IMDb and torrent page, allow instant subtitle downl
 along with the movie download, and display the movie icon. Created in Python.
 """
 
-from urllib import request, parse  # Used to generate URLs and open links
-import requests
+from urllib import parse  # Used to generate URLs
+import requests  # Used to open links
 from bs4 import BeautifulSoup  # Used to parse HTML
 import sqlite3
 
@@ -19,14 +19,14 @@ class Movie():
 
         subscene = 'http://subscene.com'
         subscene_list = subscene + '/subtitles/title?q=' + parse.quote_plus(self.title)
-        sub_soup = BeautifulSoup(requests.get(subscene_list))
+        sub_soup = BeautifulSoup(requests.get(subscene_list).text)
 
         sub_list = links_in_soup(sub_soup, '', language)
         # Append the full URL for every item in list
         sub_list = [subscene + x for x in sub_list]
 
         subscene_link = sub_list[0]  # The first one.
-        sub_download_soup = BeautifulSoup(request.urlopen(subscene_link).read())
+        sub_download_soup = BeautifulSoup(requests.get(subscene_link).text)
 
         # Base URL + the download link
         result = subscene + links_in_soup(sub_download_soup, '/subtitle/download', '', 'single')

@@ -135,13 +135,21 @@ def create_movie_db():
     conn = sqlite3.connect('fetched_movies.db')
     c = conn.cursor()
     c.execute('''CREATE table if not exists Movies (
-    name text unique primary key,
+    id integer primary key autoincrement,
+    name text unique,
     torrent_url text,
     magnet_download text,
     subtitle_download text,
     imdb_page text,
     imdb_icon text
     )''')
+    conn.commit()
+    conn.close()
+
+def drop_movie_db():
+    conn = sqlite3.connect('fetched_movies.db')
+    c = conn.cursor()
+    c.execute('''drop table if exists Movies''')
     conn.commit()
     conn.close()
 
@@ -155,9 +163,10 @@ def insert_into_db(Movie):
     conn.close()
 
 
-if __name__ == '__main__':
-
+# This removes the old database and restarts.
+def run_server():
     movies = get_torrent_links()
+    drop_movie_db()
     create_movie_db()
     for movie in movies:
         insert_into_db(movie)

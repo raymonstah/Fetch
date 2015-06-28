@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+	<title>Fetch, by Raymond Ho.</title>
+</head>
+
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="col-sm-12">
+				<h2>Fetch - A simple to use movie/subtitle downloader.</h2>
+				
+				<p>You need something to download torrents. I recommend Transmission!</br>
+					Download it here:
+					<a href="http://www.transmissionbt.com/download/">Mac</a>
+					<a href="http://sourceforge.net/projects/trqtw/">Windows</a>
+				</p>
+
+			</div>
+		</div>
+
+		<div class="row">
+			{% for movie in movies%}
+				<div class="col-sm-4 col-md-3">
+					<div class="thumbnail">
+						<img src="" alt="...">
+						<div class="caption">
+							<h4>{{movie['title']}}</h4>
+							<p>...</p>
+							<p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#" class="btn btn-default" role="button">Button</a></p>
+						</div>
+					</div>
+				</div>
+				{% endfor %}
+		</div>
+	</div>
+</body>
+
+</html>

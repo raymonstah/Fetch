@@ -57,6 +57,32 @@ class Movie():
         self.imdb_url = 'http://www.imdb.com' + result
         return self.imdb_url
 
+
+    def get_tomato_link(self):
+        """ Returns the Rotten Tomato link given a title, updates imdb url """
+
+        # Strip periods, and replace with spaces.
+        title = ''.join([x.replace('.', ' ') for x in list(self.title)])
+        bad_strings = ['1080', '720']
+        for bad_string in bad_strings:
+            bad_index = title.find(bad_string)
+            if bad_index != -1: # -1 means bad string was not found.
+                title = title[:bad_index]
+
+        tomato = 'http://www.rottentomatoes.com/search/?search=' + parse.quote_plus(title)
+        return tomato
+
+    def get_tomato_icon(self):
+        """ Returns a link to an icon of a specific movie from Rotten Tomatos"""
+        if self.tomato_link is None:
+            self.get_tomato_link()
+
+        # TOMATO SOUP, GET IT?! HA HA
+        tomato_soup = BeautifulSoup(requests.get(self.tomato_link).text)
+        link = tomato_soup.find(itemprop='image')['src']
+        
+        return link          
+
     def get_imdb_icon(self):
         """ Returns a link to an icon of a specific movie from IMDb """
 
@@ -73,6 +99,7 @@ class Movie():
         self.torrent_link = torrent_link
         self.download = download
         self.imdb_url = None  # Defined by get_imdb_url()
+        self.tomato_link = None # Defined by get_tomato_link()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~ END MOVIE CLASS ~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 

@@ -27,17 +27,20 @@
 
 		<div class="row">
 			{% for movie in movies%}
-				<div class="col-sm-4 col-md-3">
-					<div class="thumbnail">
-						<img src="" alt="...">
-						<div class="caption">
-							<h4>{{movie['title']}}</h4>
-							<p>...</p>
-							<p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#" class="btn btn-default" role="button">Button</a></p>
-						</div>
+			<div class="col-sm-4 col-md-3">
+				<div class="thumbnail">
+					<a href="{{movie['imdb_page']}}"><img src="http://resizing.flixster.com/Sa4jgLinb2yEI_r_-gx-mmlgz1Y=/180x267/dkpu1ddg7pbsk.cloudfront.net/movie/11/18/91/11189143_ori.jpg"></a>
+
+					<!-- <a href="{{movie['imdb_page']}}"><img src="{{movie['imdb_icon']}}"></a> -->
+					<div class="caption">
+						<h4><a href="{{movie['torrent_url']}}">{{movie['title']}}</a></h4>
+						<p><a href="{{movie['magnet_download']}}" class="btn btn-primary">Download</a>
+							<a href="{{movie['subtitle_download']}}" class="btn btn-default">Subtitles</a>
+						</p>
 					</div>
 				</div>
-				{% endfor %}
+			</div>
+			{% endfor %}
 		</div>
 	</div>
 </body>

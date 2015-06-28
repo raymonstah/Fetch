@@ -22,42 +22,29 @@ class TestFetch(unittest.TestCase):
 		# Download them.
 		#driver = webdriver.Firefox().get(subs)
 
-	def test_tomato_url(self):
-		tomato_url = self.movies[0].get_tomato_link() # This should redirect you..
-		driver = webdriver.Firefox()
-		driver.get(tomato_url)
-		self.assertIn('http://www.rottentomatoes.com/m', driver.current_url)
-		driver.close()
+	def test_imdb_link(self):
+		imdb_link = self.movies[0].get_imdb_link()
+		self.assertIn('http://www.imdb.com/title/', imdb_link)
 
-	# def test_tomato_icon(self):
-	# 	tomato_icon = self.movies[0].get_tomato_icon()
-	# 	#self.assertIn('http://ia.media-imdb.com/images/', tomato_icon)
-	# 	driver = webdriver.Firefox().get(tomato_icon)
+	def test_imdb_icon(self):
+		imdb_icon = self.movies[0].get_imdb_icon()
+		self.assertIn('http://ia.media-imdb.com/images/', imdb_icon)
 
-	# def test_imdb_url(self):
-	# 	imdb_url = self.movies[0].get_imdb_url()
-	# 	self.assertIn('http://www.imdb.com/title/', imdb_url)
-	# 	# Test web page
-	# 	#driver = webdriver.Firefox().get(imdb_url)
+	def test_create_movie_db(self):
+		fetch.create_movie_db()
+		conn = sqlite3.connect('fetched_movies.db')
+		c = conn.cursor()
+		c.execute('''PRAGMA table_info(Movies)''')
+		self.assertNotEqual([], c.fetchall())
+		conn.close()
 
-	# def test_imdb_icon(self):
-	# 	imdb_icon = self.movies[0].get_imdb_icon()
-	# 	self.assertIn('http://ia.media-imdb.com/images/', imdb_icon)
-	# 	#driver = webdriver.Firefox().get(imdb_icon)
-
-	# def test_create_movie_db(self):
-	# 	fetch.create_movie_db()
-	# 	conn = sqlite3.connect('fetched_movies.db')
-	# 	c = conn.cursor()
-	# 	c.execute('''PRAGMA table_info(Movies)''')
-	# 	self.assertNotEqual([], c.fetchall())
-
-	# def test_populate_db(self):
-	# 	fetch.insert_into_db(self.movies[0])
-	# 	conn = sqlite3.connect('fetched_movies.db')
-	# 	c = conn.cursor()
-	# 	c.execute('''Select name from Movies LIMIT 1''')
-	# 	self.assertTrue(len(c.fetchall()) > 0)
+	def test_populate_db(self):
+		fetch.insert_into_db(self.movies[0])
+		conn = sqlite3.connect('fetched_movies.db')
+		c = conn.cursor()
+		c.execute('''Select name from Movies LIMIT 1''')
+		self.assertTrue(len(c.fetchall()) > 0)
+		conn.close()
 
 		
 if __name__ == '__main__':

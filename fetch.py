@@ -18,7 +18,7 @@ class Movie():
         """ Get a list of Subtitles for that movie"""
 
         subscene = 'http://subscene.com'
-        subscene_list = subscene + '/subtitles/title?q=' + parse.quote_plus(self.title)
+        subscene_list = subscene + '/subtitles/title?q=' + (self.title)
         sub_soup = BeautifulSoup(requests.get(subscene_list).text)
 
         sub_list = links_in_soup(sub_soup, '', language)
@@ -32,13 +32,13 @@ class Movie():
         result = subscene + links_in_soup(sub_download_soup, '/subtitle/download', '', 'single')
         return result
 
-    def get_imdb_url(self):
+    def get_imdb_link(self):
         """ Returns the IMDb link given a title, updates imdb url """
 
         # In case we have it already.
-        if self.imdb_url:
+        if self.imdb_link:
             print('IMDb url found. Returning.')
-            return self.imdb_url
+            return self.imdb_link
 
         # Strip periods, and replace with spaces.
         title = ''.join([x.replace('.', ' ') for x in list(self.title)])
@@ -54,42 +54,16 @@ class Movie():
         result = links_in_soup(imdb_soup, '/title', '', 'single')
         if not result:
             print (imdb)
-        self.imdb_url = 'http://www.imdb.com' + result
-        return self.imdb_url
-
-
-    def get_tomato_link(self):
-        """ Returns the Rotten Tomato link given a title, updates imdb url """
-
-        # Strip periods, and replace with spaces.
-        title = ''.join([x.replace('.', ' ') for x in list(self.title)])
-        bad_strings = ['1080', '720']
-        for bad_string in bad_strings:
-            bad_index = title.find(bad_string)
-            if bad_index != -1: # -1 means bad string was not found.
-                title = title[:bad_index]
-
-        tomato = 'http://www.rottentomatoes.com/search/?search=' + parse.quote_plus(title)
-        return tomato
-
-    def get_tomato_icon(self):
-        """ Returns a link to an icon of a specific movie from Rotten Tomatos"""
-        if self.tomato_link is None:
-            self.get_tomato_link()
-
-        # TOMATO SOUP, GET IT?! HA HA
-        tomato_soup = BeautifulSoup(requests.get(self.tomato_link).text)
-        link = tomato_soup.find(itemprop='image')['src']
-        
-        return link          
+        self.imdb_link = 'http://www.imdb.com' + result
+        return self.imdb_link  
 
     def get_imdb_icon(self):
         """ Returns a link to an icon of a specific movie from IMDb """
 
-        if self.imdb_url is None:
-            self.get_imdb_url()
+        if self.imdb_link is None:
+            self.get_imdb_link()
 
-        link_soup = BeautifulSoup(requests.get(self.imdb_url).text)
+        link_soup = BeautifulSoup(requests.get(self.imdb_link).text)
         link = link_soup.find(itemprop='image')['src']
         
         return link
@@ -98,7 +72,7 @@ class Movie():
         self.title = title
         self.torrent_link = torrent_link
         self.download = download
-        self.imdb_url = None  # Defined by get_imdb_url()
+        self.imdb_link = None  # Defined by get_imdb_link()
         self.tomato_link = None # Defined by get_tomato_link()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~ END MOVIE CLASS ~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
@@ -162,7 +136,6 @@ def create_movie_db():
     conn = sqlite3.connect('fetched_movies.db')
     c = conn.cursor()
     c.execute('''CREATE table if not exists Movies (
-    id integer primary key autoincrement,
     name text unique,
     torrent_url text,
     magnet_download text,
@@ -183,9 +156,9 @@ def drop_movie_db():
 def insert_into_db(Movie):
     conn = sqlite3.connect('fetched_movies.db')
     c = conn.cursor()
-    c.execute('''INSERT OR REPLACE INTO Movies VALUES(?,?,?,?,?,?)''', 
+    c.execute('''INSERT OR IGNORE INTO Movies VALUES(?,?,?,?,?,?)''', 
         (Movie.title, Movie.torrent_link, Movie.download, Movie.get_subtitles(),
-            Movie.get_imdb_url(), Movie.get_imdb_icon()))
+            Movie.get_imdb_link(), Movie.get_imdb_icon()))
     conn.commit()
     conn.close()
 
@@ -193,8 +166,14 @@ def insert_into_db(Movie):
 # This removes the old database and restarts.
 def run_server():
     movies = get_torrent_links()
+    print('Deleting existing database..')
     drop_movie_db()
+    print('Creating new database..')
     create_movie_db()
     for movie in movies:
+        print('Adding:', movie.title)
         insert_into_db(movie)
+
+if __name__ == '__main__':
+    run_server()
 

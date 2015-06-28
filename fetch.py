@@ -73,7 +73,6 @@ class Movie():
         self.torrent_link = torrent_link
         self.download = download
         self.imdb_url = None  # Defined by get_imdb_url()
-        self.dir_title_gif = None  # Defined by download_imdb_icon()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~ END MOVIE CLASS ~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
@@ -132,14 +131,13 @@ def get_torrent_links(base_url='http://thepiratebay.mn/', category='top/207'):
     return results
 
 
-def create_database():
-    print("Creating database")
+def create_movie_db():
     conn = sqlite3.connect('fetched_movies.db')
     c = conn.cursor()
     c.execute('''CREATE table if not exists Movies (
-    name text,
+    name text unique primary key,
     torrent_url text,
-    subtitle_link text,
+    magnet_download text,
     subtitle_download text,
     imdb_page text,
     imdb_icon text
@@ -147,7 +145,20 @@ def create_database():
     conn.commit()
     conn.close()
 
+def insert_into_db(Movie):
+    conn = sqlite3.connect('fetched_movies.db')
+    c = conn.cursor()
+    c.execute('''INSERT OR REPLACE INTO Movies VALUES(?,?,?,?,?,?)''', 
+        (Movie.title, Movie.torrent_link, Movie.download, Movie.get_subtitles(),
+            Movie.get_imdb_url(), Movie.get_imdb_icon()))
+    conn.commit()
+    conn.close()
+
+
 if __name__ == '__main__':
 
     movies = get_torrent_links()
+    create_movie_db()
+    for movie in movies:
+        insert_into_db(movie)
 

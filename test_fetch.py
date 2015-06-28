@@ -5,6 +5,7 @@
 from selenium import webdriver
 import unittest
 import fetch
+import sqlite3
 
 class TestFetch(unittest.TestCase):
 
@@ -36,8 +37,22 @@ class TestFetch(unittest.TestCase):
 		self.assertIn('http://ia.media-imdb.com/images/', imdb_icon)
 		#driver = webdriver.Firefox().get(imdb_icon)
 
-	def test_create_database(self):
-		fetch.create_database()
+	# @unittest.skip('Skip test')
+	def test_create_movie_db(self):
+		fetch.create_movie_db()
+		conn = sqlite3.connect('fetched_movies.db')
+		c = conn.cursor()
+		c.execute('''PRAGMA table_info(Movies)''')
+		self.assertNotEqual([], c.fetchall())
+
+	# @unittest.skip('Skip test')
+	def test_populate_db(self):
+		fetch.insert_into_db(self.movies[0])
+		conn = sqlite3.connect('fetched_movies.db')
+		c = conn.cursor()
+		c.execute('''Select name from Movies LIMIT 1''')
+		self.assertTrue(len(c.fetchall()) > 0)
+
 		
 if __name__ == '__main__':
 	unittest.main()

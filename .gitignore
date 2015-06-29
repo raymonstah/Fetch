@@ -1,4 +1,4 @@
-/icons/*
+/static/icons/*
 *.app
 *.zip
 *pyc

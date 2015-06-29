@@ -1,5 +1,6 @@
 /static/icons/*
+venv
 *.app
 *.zip
-*pyc
+*.pyc
 __pycache__/

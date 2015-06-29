@@ -9,6 +9,8 @@ along with the movie download, and display the movie icon. Created in Python.
 from urllib import parse  # Used to generate URLs
 import requests  # Used to open links
 from bs4 import BeautifulSoup  # Used to parse HTML
+import os
+import os.path
 import sqlite3
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~ BEGIN MOVIE CLASS ~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
@@ -67,6 +69,17 @@ class Movie():
         link = link_soup.find(itemprop='image')['src']
         
         return link
+
+    def download_imdb_icon(self):
+        """ Given the IMDb icon, download it. """
+        # Create directory to store movie icons.
+        PICDIR = 'icons'
+        if not os.path.exists(PICDIR):
+            os.makedirs(PICDIR)
+        DESTINATION = PICDIR + '/' + self.title + '.jpg'
+        photo_link = self.get_imdb_icon()
+        with open(DESTINATION, 'wb') as image_file:
+            image_file.write(requests.get(photo_link).content)
 
     def __init__(self, title, torrent_link, download):
         self.title = title
@@ -141,7 +154,7 @@ def create_movie_db():
     magnet_download text,
     subtitle_download text,
     imdb_page text,
-    imdb_icon text
+    imdb_icon blob
     )''')
     conn.commit()
     conn.close()
@@ -166,8 +179,8 @@ def insert_into_db(Movie):
 # This removes the old database and restarts.
 def run_server():
     movies = get_torrent_links()
-    print('Deleting existing database..')
-    drop_movie_db()
+    # print('Deleting existing database..')
+    # drop_movie_db()
     print('Creating new database..')
     create_movie_db()
     for movie in movies:

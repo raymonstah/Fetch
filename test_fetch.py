@@ -5,6 +5,7 @@
 from selenium import webdriver
 import unittest
 import fetch
+import os.path
 import sqlite3
 
 class TestFetch(unittest.TestCase):
@@ -29,6 +30,10 @@ class TestFetch(unittest.TestCase):
 	def test_imdb_icon(self):
 		imdb_icon = self.movies[0].get_imdb_icon()
 		self.assertIn('http://ia.media-imdb.com/images/', imdb_icon)
+
+	def test_download_icon(self):
+		self.movies[0].download_imdb_icon()
+		self.assertTrue(os.path.exists('icons/' + self.movies[0].title + '.jpg'))
 
 	def test_create_movie_db(self):
 		fetch.create_movie_db()

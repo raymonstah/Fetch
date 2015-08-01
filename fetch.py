@@ -39,8 +39,7 @@ class Movie():
 
         # In case we have it already.
         if self.imdb_link:
-            print('IMDb url found. Returning.')
-            return self.imdb_link
+            print('IMDb url found. Returning.');return self.imdb_link
 
         # Strip periods, and replace with spaces.
         title = ''.join([x.replace('.', ' ') for x in list(self.title)])
@@ -55,7 +54,7 @@ class Movie():
 
         result = links_in_soup(imdb_soup, '/title', '', 'single')
         if not result:
-            print (imdb)
+            print (imdb);return None
         self.imdb_link = 'http://www.imdb.com' + result
         return self.imdb_link  
 

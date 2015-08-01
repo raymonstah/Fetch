@@ -24,6 +24,9 @@ class Movie():
         sub_soup = BeautifulSoup(requests.get(subscene_list).text)
 
         sub_list = links_in_soup(sub_soup, '', language)
+        if not sub_list:
+            return ''
+
         # Append the full URL for every item in list
         sub_list = [subscene + x for x in sub_list]
 
@@ -54,7 +57,7 @@ class Movie():
 
         result = links_in_soup(imdb_soup, '/title', '', 'single')
         if not result:
-            print (imdb);return None
+            print (imdb); result = ''
         self.imdb_link = 'http://www.imdb.com' + result
         return self.imdb_link  
 
@@ -76,8 +79,11 @@ class Movie():
         os.makedirs(PICDIR, exist_ok=True) # Create folder if DNE
         DESTINATION = PICDIR + '/' + self.title + '.jpg'
         photo_link = self.get_imdb_icon()
-        with open(DESTINATION, 'wb+') as image_file:
-            image_file.write(requests.get(photo_link).content)
+        try:
+                with open(DESTINATION, 'wb+') as image_file:
+                        image_file.write(requests.get(photo_link).content)
+        except:
+                return ''
 
         return DESTINATION
 

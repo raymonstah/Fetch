@@ -4,3 +4,4 @@ venv
 *.zip
 *.pyc
 __pycache__/
+venv_flask/
